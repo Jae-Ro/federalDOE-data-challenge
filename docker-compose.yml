@@ -26,7 +26,6 @@ services:
     environment:
       - PMA_HOST=database
       - PMA_PORT=3306
-      - PMA_ARBITRARY=1
     ports:
       - "8080:80"
     restart: always
