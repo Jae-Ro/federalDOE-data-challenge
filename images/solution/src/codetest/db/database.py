@@ -1,5 +1,5 @@
-from codetest.db.models.people import People
-from codetest.db.models.places import Places
+# from codetest.db.models.people import People
+# from codetest.db.models.places import Places
 import codetest.utils.log_utils as log_utils
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -55,28 +55,16 @@ class DB:
         creds = self.get_db_creds()
         self.engine = create_engine(f"mysql://{creds['username']}:{creds['password']}@{creds['host']}/{db_name}")
     
-    # def connect(self, db_name:str):
-    #     """Instance method to connect engine to database
-
-    #     Args:
-    #         db_name (str): name of database
-
-    #     Returns:
-    #         conn: sqlalchemy engine connection
-    #     """
-    #     if self.engine is None: self.create_engine(db_name)
-    #     return self.engine.connect()
 
     def bulk_insert(self, data:List[any]):
         with Session(self.engine) as session, session.begin():
             success = 0
             for i, obj in enumerate(data):
-                session.add(obj)
-                # try:
-                #     session.add(obj)
-                # except Exception as e:
-                #     logger.error(f"Encountered Error When attempting to insert {obj}.\n\t{e}")
-                #     raise e
+                try:
+                    session.add(obj)
+                except Exception as e:
+                    logger.error(f"Encountered Error When attempting to insert {obj}.\n\t{e}")
+                    raise e
                 success +=1
         logger.debug(f"Successfully Inserted {success}/{len(data)} into {data[0].__tablename__} Table")
     
