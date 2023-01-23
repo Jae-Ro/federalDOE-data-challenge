@@ -18,7 +18,7 @@ def get_custom_logger(name:str, log_level:int=logging.DEBUG) -> logging.Logger:
     stream_handler.setLevel(log_level)
 
     # formatters
-    formatter = logging.Formatter(f'[%(name)s][%(asctime)s][%(levelname)s]:  %(message)s', "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(f'[%(name)s][%(asctime)s][%(levelname)s]: %(message)s', "%Y-%m-%d %H:%M:%S")
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
     logger.setLevel(log_level)

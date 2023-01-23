@@ -10,7 +10,7 @@ mapper_registry = registry()
 @dataclass
 class Places:
     # table name
-    __tablename__ = "people"
+    __tablename__ = "places"
 
     # sqlaclchemy metada key
     __sa_dataclass_metadata_key__ = "sa"
