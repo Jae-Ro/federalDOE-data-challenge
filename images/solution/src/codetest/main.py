@@ -10,11 +10,11 @@ import os, argparse
 load_dotenv()
 
 def count_people_by_country(people:List[dict], places:List[dict]) -> dict:
-    """_summary_
+    """Function to count number of people born in a country give people and places dict records
 
     Args:
-        people (List[dict]): _description_
-        places (List[dict]): _description_
+        people (List[dict]): list of dictionaries of people data read from csv (note: dob is string not date)
+        places (List[dict]): list of dictionarise of places data read from csv
 
     Notes:
     - Assumes no 2 countries can have the same city name given that 
@@ -22,7 +22,7 @@ def count_people_by_country(people:List[dict], places:List[dict]) -> dict:
     and the prompt is asking to count people born by country
 
     Returns:
-        dict: _description_
+        dict: dictionary representing { <country: str>: <num people born in country: int> }
     """
     # Time Complexity - O(Places + People)
     count_dict, city2country = {}, {}
@@ -44,17 +44,16 @@ def find_most_common_birth_month_by_county(
     places:List[dict], 
     target_country:str="Northern Ireland"
     ) -> dict:
-    """_summary_
+    """Function to find the most common birth month by county for a target country
 
     Args:
-        people (List[dict]): _description_
-        places (List[dict]): _description_
-        target_country (str, optional): _description_. Defaults to "Northern Ireland".
+        people (List[dict]): list of dictionaries of people data read from csv (note: dob is string not date)
+        places (List[dict]): list of dictionarise of places data read from csv
+        target_country (str, optional): target country to run algorithm on. Defaults to "Northern Ireland".
 
     Returns:
-        dict: _description_
+        dict: dictionary representing { <county: str>: <most common birth month: int> }
     """
-
     # Time Complexity - O(Places + People + Num Counties in Target Country)
     count_dict, city2county, res_dict = {}, {}, {}
     for p_dict in places:
@@ -83,46 +82,58 @@ def find_most_common_birth_month_by_county(
 
 
 def run(args:dict) -> Tuple[dict, dict]:
+    """Top-Level Runner Function
+
+    Args:
+        args (dict): dictionary of argparse args
+
+    Returns:
+        Tuple[dict, dict]: report dicts of count_people_by_country, find_most_common_birth_month_by_county
+    """
 
     # Create logger
     logger = log_utils.get_custom_logger("CodetestRun")
-
     logger.info(f"---------- [START] Data Load and Summary Calc for People and Places! ----------")
+    try:
+        # Instantiate DB
+        logger.info('Creating database engine...')
+        db = DB()
+        db.create_engine('codetest')
 
-    # Instantiate DB
-    logger.info('Creating database engine...')
-    db = DB()
-    db.create_engine('codetest')
+        # Setup filepaths
+        data_dir = args['data_dir']
+        fpath_people = os.path.join(data_dir, 'people.csv')
+        fpath_places = os.path.join(data_dir, 'places.csv')
 
-    # Setup filepaths
-    data_dir = args['data_dir']
-    fpath_people = os.path.join(data_dir, 'people.csv')
-    fpath_places = os.path.join(data_dir, 'places.csv')
+        # load csv and convert to records
+        logger.info('Reading Data from CSV files...')
+        people = io_utils.read_csv_to_records(fpath_people)
+        places = io_utils.read_csv_to_records(fpath_places)
 
-    # load csv and convert to records
-    logger.info('Reading Data from CSV files...')
-    people = io_utils.read_csv_to_records(fpath_people)
-    places = io_utils.read_csv_to_records(fpath_places)
+        # Summarize Data -- program end
+        logger.info('Calculating Summary Stats...')
+        report_a = count_people_by_country(people, places)
+        report_b = find_most_common_birth_month_by_county(people, places)
 
-    # Summarize Data -- program end
-    logger.info('Calculating Summary Stats...')
-    report_a = count_people_by_country(people, places)
-    report_b = find_most_common_birth_month_by_county(people, places)
+        # Write sumary jsons to file
+        logger.info('Writing Summary Stats to Json Files...')
+        io_utils.write_json(report_a, os.path.join(data_dir, "summary_output.json"))
+        io_utils.write_json(report_b, os.path.join(data_dir, "summary_output_extra.json"))
 
-    # Write sumary jsons to file
-    logger.info('Writing Summary Stats to Json Files...')
-    io_utils.write_json(report_a, os.path.join(data_dir, "summary_output.json"))
-    io_utils.write_json(report_b, os.path.join(data_dir, "summary_output_extra.json"))
+        # Get list of People and Places instances 
+        logger.info('Transforming Data into ORM Table Dataclasses...')
+        people_li = io_utils.get_people_from_dict_records(people)
+        places_li = io_utils.get_places_from_dict_records(places)
 
-    # Get list of People and Places instances 
-    logger.info('Transforming Data into ORM Table Dataclasses...')
-    people_li = io_utils.get_people_from_dict_records(people)
-    places_li = io_utils.get_places_from_dict_records(places)
+        # Insert instances of People and Places into DB
+        logger.info('Inserting ORM Table Dataclasses into Database...')
+        db.bulk_insert(people_li)
+        db.bulk_insert(places_li)
 
-    # Insert instances of People and Places into DB
-    logger.info('Inserting ORM Table Dataclasses into Database...')
-    db.bulk_insert(people_li)
-    db.bulk_insert(places_li)
+    except Exception as e:
+        # graceful exit
+        logger.error(e)
+        report_a, report_b = None, None
 
     logger.info(f"---------- [END] Data Load and Summary Calc for People and Places! ----------")
     return report_a, report_b

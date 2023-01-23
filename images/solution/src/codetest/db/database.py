@@ -3,7 +3,7 @@ from codetest.db.models.places import Places
 import codetest.utils.log_utils as log_utils
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Union
 import os
 
 
@@ -62,14 +62,14 @@ class DB:
         self.engine = create_engine(f"mysql://{creds['username']}:{creds['password']}@{creds['host']}/{db_name}")
         self.db_name = db_name
 
-    def select_one(self, table_name:str) -> List[any]:
-        """_summary_
+    def select_one(self, table_name:str) -> List[Union[People, Places]]:
+        """Function to select one row from input table
 
         Args:
-            table_name (str): _description_
+            table_name (str): name of table to query
 
         Returns:
-            List[any]: _description_
+            List[Union[People, Places]]: List of table db model dataclass instances
         """
         result = []
         data_class = self.table_types[table_name]
@@ -78,12 +78,14 @@ class DB:
         if len(result) >0: logger.debug(f"Successfully Retreived: {len(result)} Row from '{table_name}' Table")
         return result
     
-    def delete_by_id(self, table_name:str, id:any):
-        """_summary_
+    def delete_by_id(self, table_name:str, id:any) -> Union[People, Places]:
+        """Function to delete row from input table by primary key
 
         Args:
-            table_name (str): _description_
-            id (any): _description_
+            table_name (str): name of table to delete row from
+            id (any): primary key value to delete
+        Returns:
+            Union[People, Places]: instance of table db model dataclass that was deleted
         """
         data_class = self.table_types[table_name]
         with Session(self.engine) as session, session.begin():
@@ -94,13 +96,13 @@ class DB:
         return res
     
     def truncate_table(self, table_name:str) -> int:
-        """_summary_
+        """Function to delete all rows in input table
 
         Args:
-            table_name (str): _description_
+            table_name (str): name of table
 
         Returns:
-            int: _description_
+            int: number of rows deleted
         """
         data_class = self.table_types[table_name]
         with Session(self.engine) as session, session.begin():
@@ -109,14 +111,15 @@ class DB:
                 logger.debug(f"Successfully Deleted {num_rows_deleted} Row(s) from '{table_name}' Table")
         return num_rows_deleted
 
-    def bulk_insert(self, data:List[any]):
-        """_summary_
+    def insert_iterative(self, data:List[Union[People, Places]]):
+        """Function to insert list of instances of table db model dataclass
+        iteratively into database table
 
         Args:
-            data (List[any]): _description_
+            data (List[Union[People, Places]]): list of instances of table db model dataclass
 
         Raises:
-            e: _description_
+            e: General insert error
         """
         with Session(self.engine) as session, session.begin():
             success = 0
