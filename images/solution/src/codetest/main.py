@@ -125,9 +125,8 @@ def run(args:dict):
     places_li = [Places(**place) for place in places]
 
     # Insert Data into Relevant Tables
-    # db.bulk_insert(people_li)
-    # db.bulk_insert(places_li)
-
+    db.bulk_insert(people_li)
+    db.bulk_insert(places_li)
 
     logger.info(f"Complete!")
 
