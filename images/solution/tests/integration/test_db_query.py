@@ -18,7 +18,7 @@ class TestDatabaseQuery:
         # configure test data
         results = self.db.select_one('people')
         if len(results) < 1:
-            self.db.bulk_insert([
+            self.db.insert_iterative([
                 People(
                     given_name="Jae", 
                     family_name="Ro", 
@@ -42,7 +42,7 @@ class TestDatabaseQuery:
         # configure test data
         results = self.db.select_one('places')
         if len(results) < 1:
-            self.db.bulk_insert([
+            self.db.insert_iterative([
                 Places(
                     city="Springfield",
                     county="Fairfax",

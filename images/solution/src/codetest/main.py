@@ -127,8 +127,8 @@ def run(args:dict) -> Tuple[dict, dict]:
 
         # Insert instances of People and Places into DB
         logger.info('Inserting ORM Table Dataclasses into Database...')
-        db.bulk_insert(people_li)
-        db.bulk_insert(places_li)
+        db.insert_iterative(people_li)
+        db.insert_iterative(places_li)
 
     except Exception as e:
         # graceful exit
