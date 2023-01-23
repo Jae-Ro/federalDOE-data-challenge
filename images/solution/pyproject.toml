@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codetest"
+version = "0.0.1"
+authors = [{ name="Jae Ro", email="jaero.gatech@gmail.com" }]
+description = "Small Codetest Package for Tamr takehome Assignment"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = ["Programming Language :: Python :: 3"]
+
+[project.urls]
+"Homepage" = "https://github.com/Jae-Ro/federalDOE-data-challenge"
+"Bug Tracker" = "https://github.com/Jae-Ro/federalDOE-data-challenge/issues"
