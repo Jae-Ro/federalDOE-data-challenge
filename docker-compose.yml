@@ -30,9 +30,17 @@ services:
     ports:
       - "8080:80"
     restart: always
-  # solution:
-  #   image: solution
-  #   build: images/solution
-  #   command: ["./solution.py"]
-  #   volumes:
-  #     - ./data:/data
+  solution:
+    image: solution
+    build: images/solution
+    container_name: solution
+    links:
+      - database 
+    environment:
+      - DB_HOST=database
+      - DB_UN=codetest
+      - DB_PW=swordfish
+    command: ["./entrypoint.sh"]
+    volumes:
+      - ./data:/data
+      - ./images/solution:/app
