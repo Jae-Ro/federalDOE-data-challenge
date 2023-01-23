@@ -25,7 +25,7 @@ class TestDatabaseModelTypeValidation:
                 msg = f" -- {e}"
                 res = False
 
-            self.logger.debug(f"Test {i+1}/{len(test_cases)}{msg}")
+            self.logger.debug(f"Sub-Test {i+1}/{len(test_cases)}{msg}")
             assert res == expected_results[i]
     
     def test_data_model_people(self):
@@ -52,11 +52,11 @@ class TestDatabaseModelTypeValidation:
         """Testing database model class - Places
         """
         test_cases = [
-            { 'city': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
+            { 'city': 'Springfield', 'county': 'Fairfax', 'country': 'United States' },
             { 'city': None, 'county': None, 'country': None },
-            { 'city': 1, 'county': 'Fairfax', 'country': 'USA' },
-            { 'City': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
-            { 'Lity': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
+            { 'city': 1, 'county': 'Fairfax', 'country': 'United States' },
+            { 'City': 'Springfield', 'county': 'Fairfax', 'country': 'United States' },
+            { 'Lity': 'Springfield', 'county': 'Fairfax', 'country': 'United States' },
         ]
         expected_results = [
             True,
