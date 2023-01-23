@@ -5,11 +5,11 @@ def get_custom_logger(name:str, log_level:int=logging.DEBUG) -> logging.Logger:
     """Function to return a custom formatted logger object
 
     Args:
-        name (str): _description_
-        log_level (int, optional): _description_. Defaults to logging.DEBUG.
+        name (str): name of logger
+        log_level (int, optional): desired logging level. Defaults to logging.DEBUG.
 
     Returns:
-        logging.Logger: _description_
+        logging.Logger: custom formatted Logger streaming to stdout
     """
     logger = logging.getLogger(name)
     
