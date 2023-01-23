@@ -1,3 +1,4 @@
 mysqlclient ~= 2.1.0
 SQLAlchemy ~= 1.4.31
-python-dotenv~=0.21.1
+python-dotenv~=0.21.0
+pytest~=7.2.1
