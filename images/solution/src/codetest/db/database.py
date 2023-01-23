@@ -1,10 +1,11 @@
-# from codetest.db.models.people import People
-# from codetest.db.models.places import Places
+from codetest.db.models.people import People
+from codetest.db.models.places import Places
 import codetest.utils.log_utils as log_utils
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-import os
 from typing import List
+import os
+
 
 logger = log_utils.get_custom_logger("DBLogger")
 
@@ -27,6 +28,11 @@ class DB:
         """Initialization method
         """
         self.engine = None
+        self.db_name = None
+        self.table_types = {
+            'people': People,
+            'places': Places
+        }
 
     def get_db_creds(self) -> dict:
         """Instance method to get database credentials from environment  variables
@@ -43,7 +49,6 @@ class DB:
         # check for null fields
         null_fields = [k for k,v in creds.items() if v is None]
         if len(null_fields) > 0: logger.warning(f"The following DB Credential fields were not found: {null_fields}")
-
         return creds
     
     def create_engine(self, db_name:str):
@@ -53,10 +58,66 @@ class DB:
             db_name (str): database name
         """
         creds = self.get_db_creds()
+        connection_str = f"mysql://{creds['username']}:{creds['password']}@{creds['host']}/{db_name}"
         self.engine = create_engine(f"mysql://{creds['username']}:{creds['password']}@{creds['host']}/{db_name}")
+        self.db_name = db_name
+
+    def select_one(self, table_name:str) -> List[any]:
+        """_summary_
+
+        Args:
+            table_name (str): _description_
+
+        Returns:
+            List[any]: _description_
+        """
+        result = []
+        data_class = self.table_types[table_name]
+        with Session(self.engine) as session:
+            result = session.query(data_class).limit(1).all()
+        if len(result) >0: logger.debug(f"Successfully Retreived: {len(result)} Row from '{table_name}' Table")
+        return result
     
+    def delete_by_id(self, table_name:str, id:any):
+        """_summary_
+
+        Args:
+            table_name (str): _description_
+            id (any): _description_
+        """
+        data_class = self.table_types[table_name]
+        with Session(self.engine) as session, session.begin():
+            res = session.get(data_class, id)
+            session.delete(res)
+            if len(session.deleted) > 0:
+                logger.debug(f"Successfully Deleted 1 Row from '{table_name}' Table")
+        return res
+    
+    def truncate_table(self, table_name:str) -> int:
+        """_summary_
+
+        Args:
+            table_name (str): _description_
+
+        Returns:
+            int: _description_
+        """
+        data_class = self.table_types[table_name]
+        with Session(self.engine) as session, session.begin():
+            num_rows_deleted = session.query(data_class).delete()
+            if num_rows_deleted > 0:
+                logger.debug(f"Successfully Deleted {num_rows_deleted} Row(s) from '{table_name}' Table")
+        return num_rows_deleted
 
     def bulk_insert(self, data:List[any]):
+        """_summary_
+
+        Args:
+            data (List[any]): _description_
+
+        Raises:
+            e: _description_
+        """
         with Session(self.engine) as session, session.begin():
             success = 0
             for i, obj in enumerate(data):
@@ -65,7 +126,7 @@ class DB:
                 except Exception as e:
                     logger.error(f"Encountered Error When attempting to insert {obj}.\n\t{e}")
                     raise e
-                success +=1
+                else: success +=1
         logger.debug(f"Successfully Inserted {success}/{len(data)} into {data[0].__tablename__} Table")
     
 

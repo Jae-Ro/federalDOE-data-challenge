@@ -31,6 +31,6 @@ class Places:
         
 
 if __name__ == "__main__":
-    data = { 'city':'Boston', 'county': 1, 'country': "USA" }
+    data = { 'city':'Boston', 'county': 1, 'country': "United States" }
     p = Places(**data)
     print(p)

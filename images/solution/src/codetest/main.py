@@ -4,14 +4,12 @@ from codetest.db.models.people import People
 from codetest.db.models.places import Places
 import codetest.utils.log_utils as log_utils
 import codetest.utils.io_utils as io_utils
-from datetime import date
 from dotenv import load_dotenv
-from typing import List
+from typing import List, Tuple
 import os, argparse
 load_dotenv()
 
-
-def count_people_places(people:List[dict], places:List[dict]) -> dict:
+def count_people_by_country(people:List[dict], places:List[dict]) -> dict:
     """_summary_
 
     Args:
@@ -84,12 +82,15 @@ def find_most_common_birth_month_by_county(
     return { k: v['month'] for k, v in res_dict.items() }
 
 
-def run(args:dict):
+def run(args:dict) -> Tuple[dict, dict]:
 
     # Create logger
-    logger = log_utils.get_custom_logger("Main")
+    logger = log_utils.get_custom_logger("CodetestRun")
+
+    logger.info(f"---------- [START] Data Load and Summary Calc for People and Places! ----------")
 
     # Instantiate DB
+    logger.info('Creating database engine...')
     db = DB()
     db.create_engine('codetest')
 
@@ -99,36 +100,32 @@ def run(args:dict):
     fpath_places = os.path.join(data_dir, 'places.csv')
 
     # load csv and convert to records
+    logger.info('Reading Data from CSV files...')
     people = io_utils.read_csv_to_records(fpath_people)
     places = io_utils.read_csv_to_records(fpath_places)
 
     # Summarize Data -- program end
-    report_a = count_people_places(people, places)
+    logger.info('Calculating Summary Stats...')
+    report_a = count_people_by_country(people, places)
     report_b = find_most_common_birth_month_by_county(people, places)
 
     # Write sumary jsons to file
+    logger.info('Writing Summary Stats to Json Files...')
     io_utils.write_json(report_a, os.path.join(data_dir, "summary_output.json"))
     io_utils.write_json(report_b, os.path.join(data_dir, "summary_output_extra.json"))
 
-    # Transform Data into appropriate data classes
-    people_li = []
-    for p_dict in people:
-        # get y, m, d strings
-        year, month, day = p_dict['date_of_birth'].split("-")
-        # validate length of each date component
-        assert len(year) == 4 and len(month) == 2 and len(day) == 2
-        # create date object
-        p_dict['date_of_birth'] = date(int(year), int(month), int(day))
-        # create instance of dataclass and append to list
-        people_li.append(People(**p_dict))
-    
-    places_li = [Places(**place) for place in places]
+    # Get list of People and Places instances 
+    logger.info('Transforming Data into ORM Table Dataclasses...')
+    people_li = io_utils.get_people_from_dict_records(people)
+    places_li = io_utils.get_places_from_dict_records(places)
 
-    # Insert Data into Relevant Tables
+    # Insert instances of People and Places into DB
+    logger.info('Inserting ORM Table Dataclasses into Database...')
     db.bulk_insert(people_li)
     db.bulk_insert(places_li)
 
-    logger.info(f"Complete!")
+    logger.info(f"---------- [END] Data Load and Summary Calc for People and Places! ----------")
+    return report_a, report_b
 
 
 if __name__=="__main__":
