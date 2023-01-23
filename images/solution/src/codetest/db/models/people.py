@@ -17,23 +17,23 @@ class People:
 
     # fields
     id: int = field(init=False, metadata={"sa": Column("id", Integer, primary_key=True, autoincrement="auto", nullable=False)})
-    Given_name: Optional[str] = field(default=None, metadata={"sa":  Column("Given_name", String(80), nullable=True)})
-    Family_name: Optional[str] = field(default=None, metadata={"sa": Column("Family_name", String(80), nullable=True)})
-    Date_of_birth: Optional[date] = field(default=None, metadata={"sa": Column("Date_of_birth", Date, nullable=True)})
-    Place_of_birth: Optional[str] = field(default=None, metadata={"sa": Column("Place_of_birth", String(80), nullable=True)})
+    given_name: Optional[str] = field(default=None, metadata={"sa":  Column("given_name", String(80), nullable=True)})
+    family_name: Optional[str] = field(default=None, metadata={"sa": Column("family_name", String(80), nullable=True)})
+    date_of_birth: Optional[date] = field(default=None, metadata={"sa": Column("date_of_birth", Date, nullable=True)})
+    place_of_birth: Optional[str] = field(default=None, metadata={"sa": Column("place_of_birth", String(80), nullable=True)})
 
     def __post_init__(self):
-        if not isinstance(self.Given_name, str) and self.Given_name is not None:
-            raise TypeError(f"'Given_name' expected type <class string>, but recieved an {type(self.Given_name)} instead")
-        if not isinstance(self.Family_name, str) and self.Family_name is not None:
-            raise TypeError(f"'Family_name' expected type <class string>, but recieved an {type(self.Family_name)} instead")
-        if not isinstance(self.Place_of_birth, str) and self.Place_of_birth is not None:
-            raise TypeError(f"'Place_of_birth' expected type <class string>, but recieved an {type(self.Place_of_birth)} instead")
-        if not isinstance(self.Date_of_birth, date) and self.Date_of_birth is not None:
-            raise TypeError(f"'Date_of_birth' expected type <class datetime.date>, but recieved an {type(self.Date_of_birth)} instead")
+        if not isinstance(self.given_name, str) and self.given_name is not None:
+            raise TypeError(f"'given_name' expected type <class string>, but recieved an {type(self.given_name)} instead")
+        if not isinstance(self.family_name, str) and self.family_name is not None:
+            raise TypeError(f"'family_name' expected type <class string>, but recieved an {type(self.family_name)} instead")
+        if not isinstance(self.place_of_birth, str) and self.place_of_birth is not None:
+            raise TypeError(f"'place_of_birth' expected type <class string>, but recieved an {type(self.place_of_birth)} instead")
+        if not isinstance(self.date_of_birth, date) and self.date_of_birth is not None:
+            raise TypeError(f"'date_of_birth' expected type <class datetime.date>, but recieved an {type(self.date_of_birth)} instead")
         
 
 if __name__ == "__main__":
-    data = { 'Given_name':'Jae', 'Family_name': 'Ro', 'Date_of_birth': 'January 23, 2023', 'Place_of_birth': 'Boston' }
+    data = { 'given_name':'Jae', 'family_name': 'Ro', 'date_of_birth': 'January 23, 2023', 'place_of_birth': 'Boston' }
     p = People(**data)
     print(p)

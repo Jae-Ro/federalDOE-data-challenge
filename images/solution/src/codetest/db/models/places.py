@@ -17,20 +17,20 @@ class Places:
 
     # fields
     id: int = field(init=False, metadata={"sa": Column("id", Integer, primary_key=True, autoincrement="auto", nullable=False)})
-    City: Optional[str] = field(default=None, metadata={"sa":  Column("City", String(80), nullable=True)})
-    County: Optional[str] = field(default=None, metadata={"sa": Column("County", String(80), nullable=True)})
-    Country: Optional[str] = field(default=None, metadata={"sa": Column("Country", String(80), nullable=True)})
+    city: Optional[str] = field(default=None, metadata={"sa":  Column("city", String(80), nullable=True)})
+    county: Optional[str] = field(default=None, metadata={"sa": Column("county", String(80), nullable=True)})
+    country: Optional[str] = field(default=None, metadata={"sa": Column("country", String(80), nullable=True)})
 
     def __post_init__(self):
-        if not isinstance(self.City, str) and self.City is not None:
-            raise TypeError(f"'City' expected type <class string>, but recieved an {type(self.City)} instead")
-        if not isinstance(self.County, str) and self.County is not None:
-            raise TypeError(f"'County' expected type <class string>, but recieved an {type(self.County)} instead")
-        if not isinstance(self.Country, str) and  self.Country is not None:
-            raise TypeError(f"'Country' expected type <class string>, but recieved an {type(self.Country)} instead")
+        if not isinstance(self.city, str) and self.city is not None:
+            raise TypeError(f"'city' expected type <class string>, but recieved an {type(self.city)} instead")
+        if not isinstance(self.county, str) and self.county is not None:
+            raise TypeError(f"'county' expected type <class string>, but recieved an {type(self.county)} instead")
+        if not isinstance(self.country, str) and  self.country is not None:
+            raise TypeError(f"'country' expected type <class string>, but recieved an {type(self.country)} instead")
         
 
 if __name__ == "__main__":
-    data = { 'City':'Boston', 'County': 1, 'Country': "USA" }
+    data = { 'city':'Boston', 'county': 1, 'country': "USA" }
     p = Places(**data)
     print(p)

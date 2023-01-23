@@ -32,11 +32,11 @@ class TestDatabaseModelTypeValidation:
         """Testing database model class - People
         """
         test_cases = [
-            { 'Given_name': 'Jae', 'Family_name': 'Ro', 'Date_of_birth': date.today(), 'Place_of_birth': 'Boston' },
-            { 'Given_name': None, 'Family_name': None, 'Date_of_birth': None, 'Place_of_birth': None },
-            { 'Given_name':'Jae', 'Family_name': 'Ro', 'Date_of_birth': 'January 23, 2023', 'Place_of_birth': 'Boston' },
-            { 'Given_name': 1, 'Family_name': 'Ro', 'Date_of_birth': date.today(), 'Place_of_birth': 'Boston' },
-            { 'given_name': 'Jae', 'Family_name': 'Ro', 'Date_of_birth': date.today(), 'Place_of_birth': 'Boston' },
+            { 'given_name': 'Jae', 'family_name': 'Ro', 'date_of_birth': date.today(), 'place_of_birth': 'Boston' },
+            { 'given_name': None, 'family_name': None, 'date_of_birth': None, 'place_of_birth': None },
+            { 'given_name':'Jae', 'family_name': 'Ro', 'date_of_birth': 'January 23, 2023', 'place_of_birth': 'Boston' },
+            { 'given_name': 1, 'family_name': 'Ro', 'date_of_birth': date.today(), 'place_of_birth': 'Boston' },
+            { 'Given_name': 'Jae', 'family_name': 'Ro', 'date_of_birth': date.today(), 'place_of_birth': 'Boston' },
         ]
         expected_results = [
             True,
@@ -52,11 +52,11 @@ class TestDatabaseModelTypeValidation:
         """Testing database model class - Places
         """
         test_cases = [
-            { 'City': 'Springfield', 'County': 'Fairfax', 'Country': 'USA' },
-            { 'City': None, 'County': None, 'Country': None },
-            { 'City': 1, 'County': 'Fairfax', 'Country': 'USA' },
-            { 'City': 'Springfield', 'county': 'Fairfax', 'Country': 'USA' },
-            { 'Lity': 'Springfield', 'County': 'Fairfax', 'Country': 'USA' },
+            { 'city': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
+            { 'city': None, 'county': None, 'country': None },
+            { 'city': 1, 'county': 'Fairfax', 'country': 'USA' },
+            { 'City': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
+            { 'Lity': 'Springfield', 'county': 'Fairfax', 'country': 'USA' },
         ]
         expected_results = [
             True,
