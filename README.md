@@ -109,3 +109,16 @@ Details of how to run and connect to the database are below, together with how t
 5. Cleaning up
 
     To tidy up, bringing down all the containers and deleting them, run `docker compose down`.
+
+
+## Running Submitted Solution
+### Step 1: In one terminal window run the following
+```bash
+$ docker compose up database phpmyadmin
+```
+* Navigate to `http://localhost:8080` in your web browser to use `phpmyadmin`
+### Step 2: In a seperate terminal window run the following
+```bash
+$ docker compose up solution
+```
+* Verify the load has been completed using `phpmyadmin`
