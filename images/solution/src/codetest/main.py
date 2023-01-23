@@ -94,46 +94,41 @@ def run(args:dict) -> Tuple[dict, dict]:
     # Create logger
     logger = log_utils.get_custom_logger("CodetestRun")
     logger.info(f"---------- [START] Data Load and Summary Calc for People and Places! ----------")
-    try:
-        # Instantiate DB
-        logger.info('Creating database engine...')
-        db = DB()
-        db.create_engine('codetest')
 
-        # Setup filepaths
-        data_dir = args['data_dir']
-        fpath_people = os.path.join(data_dir, 'people.csv')
-        fpath_places = os.path.join(data_dir, 'places.csv')
+    # Instantiate DB
+    logger.info('Creating database engine...')
+    db = DB()
+    db.create_engine('codetest')
 
-        # load csv and convert to records
-        logger.info('Reading Data from CSV files...')
-        people = io_utils.read_csv_to_records(fpath_people)
-        places = io_utils.read_csv_to_records(fpath_places)
+    # Setup filepaths
+    data_dir = args['data_dir']
+    fpath_people = os.path.join(data_dir, 'people.csv')
+    fpath_places = os.path.join(data_dir, 'places.csv')
 
-        # Summarize Data -- program end
-        logger.info('Calculating Summary Stats...')
-        report_a = count_people_by_country(people, places)
-        report_b = find_most_common_birth_month_by_county(people, places)
+    # load csv and convert to records
+    logger.info('Reading Data from CSV files...')
+    people = io_utils.read_csv_to_records(fpath_people)
+    places = io_utils.read_csv_to_records(fpath_places)
 
-        # Write sumary jsons to file
-        logger.info('Writing Summary Stats to Json Files...')
-        io_utils.write_json(report_a, os.path.join(data_dir, "summary_output.json"))
-        io_utils.write_json(report_b, os.path.join(data_dir, "summary_output_extra.json"))
+    # Summarize Data -- program end
+    logger.info('Calculating Summary Stats...')
+    report_a = count_people_by_country(people, places)
+    report_b = find_most_common_birth_month_by_county(people, places)
 
-        # Get list of People and Places instances 
-        logger.info('Transforming Data into ORM Table Dataclasses...')
-        people_li = io_utils.get_people_from_dict_records(people)
-        places_li = io_utils.get_places_from_dict_records(places)
+    # Write sumary jsons to file
+    logger.info('Writing Summary Stats to Json Files...')
+    io_utils.write_json(report_a, os.path.join(data_dir, "summary_output.json"))
+    io_utils.write_json(report_b, os.path.join(data_dir, "summary_output_extra.json"))
 
-        # Insert instances of People and Places into DB
-        logger.info('Inserting ORM Table Dataclasses into Database...')
-        db.insert_iterative(people_li)
-        db.insert_iterative(places_li)
+    # Get list of People and Places instances 
+    logger.info('Transforming Data into ORM Table Dataclasses...')
+    people_li = io_utils.get_people_from_dict_records(people)
+    places_li = io_utils.get_places_from_dict_records(places)
 
-    except Exception as e:
-        # graceful exit
-        logger.error(e)
-        report_a, report_b = None, None
+    # Insert instances of People and Places into DB
+    logger.info('Inserting ORM Table Dataclasses into Database...')
+    db.insert_iterative(people_li)
+    db.insert_iterative(places_li)
 
     logger.info(f"---------- [END] Data Load and Summary Calc for People and Places! ----------")
     return report_a, report_b
@@ -144,4 +139,7 @@ if __name__=="__main__":
     parser.add_argument('--data_dir', default="/data", type=str, help="path to directory where data file I/O will happen")
     args = parser.parse_args()
     args = vars(args)
-    run(args)
+    try:
+        run(args)
+    except Exception as e:
+        print(e)
