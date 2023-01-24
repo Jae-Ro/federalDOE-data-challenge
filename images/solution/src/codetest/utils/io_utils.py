@@ -16,14 +16,8 @@ def read_csv_to_records(csv_path:str) -> List[dict]:
     """
     records = []
     with open(csv_path) as csv_file:
-        reader = csv.reader(csv_file)
-        headers = next(reader)
-        headers = [h.strip() for h in headers]
-        for row in reader: 
-            rec = {}
-            for i in range(len(row)):
-                rec[headers[i]] = row[i].strip()
-            records.append(rec)
+        reader = csv.DictReader(csv_file)
+        for row in reader: records.append(row)
     
     return records
 

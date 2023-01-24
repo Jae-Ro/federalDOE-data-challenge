@@ -33,6 +33,7 @@ def count_people_by_country(people:List[dict], places:List[dict]) -> dict:
     
     for p_dict in people:
         city = p_dict['place_of_birth']
+        if city not in city2country: continue
         country = city2country[city]
         count_dict[country] = count_dict.get(country, 0) + 1
     
